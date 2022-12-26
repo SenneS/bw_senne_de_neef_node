@@ -1,0 +1,9 @@
+{
+  "name": "bw_senne_de_neef_node",
+  "version": "1.0.0",
+  "description": "Node.js project for backend web",
+  "main": "app.js",
+  "author": "SenneS <71817687+SenneS@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true
+}
