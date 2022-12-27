@@ -1,9 +1,7 @@
 import { fastify, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { appConfig } from '../../../config';
 import { User } from '../../../models/User';
 import { serverInstance } from '../../../server.js';
 import { AuthService } from './service';
-const { scryptSync, randomBytes } = require("crypto");
 
 namespace AuthController {
 
@@ -35,24 +33,39 @@ namespace AuthController {
             if(passwordHash !== existingUser.passwordHash) {
                 return reply.status(401).send({status: 401, message: "The entered password was incorrect."})
             }
-            const token = serverInstance.jwt.sign({
+
+            const payload = {
                 username: existingUser.username,
                 email: existingUser.email
-            });
+            };
 
-            return reply.status(201).send({status: 201, message: null, data: token});
+            const accessToken = serverInstance.jwt.sign(payload, {expiresIn: '1h'});
+            const refreshToken = serverInstance.jwt.sign(payload, {expiresIn: '1d'});
+
+            return reply.setCookie('refreshToken', refreshToken, {
+                path: '/api/v1/auth/refresh',
+                secure: false,
+                httpOnly: true,
+                sameSite: 'strict',
+                signed: true,
+                //documentation says a number in milliseconds -> according to my browser this is actually in seconds bc my cookie somehow ended up being valid till 2025
+                maxAge: (24 * 60 * 60)
+            }).status(201).send({status: 201, message: null, data: {accessToken: accessToken}});
         }
         catch (e) {
-            reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+            console.log(e);
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
         }
     }
 
     export async function logout(request : FastifyRequest, reply : FastifyReply) {
         try {
             await User.deleteMany();
+            return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
-            reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+            console.log(e);
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
         }
     }
 
@@ -77,11 +90,27 @@ namespace AuthController {
             newUser.passwordHash = passwordHash;
             newUser.passwordSalt = passwordSalt;
             await newUser.save();
+
+            return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
-            reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+            console.log(e);
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
         }
     }
+
+    export async function getAll(request : FastifyRequest, reply : FastifyReply) {
+        try {
+            console.log(request.cookies);
+            console.log(request.user);
+            console.log(request.headers);
+            return reply.status(200).send({status: 200, message: null, data: null});
+        }
+        catch (e) {
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+        }
+    }
+
 }
 
 export function installAPIv1Auth(server : FastifyInstance) {
@@ -89,6 +118,7 @@ export function installAPIv1Auth(server : FastifyInstance) {
         instance.post('/register', AuthController.register);
         instance.post('/login', AuthController.login);
         instance.post('/logout', AuthController.logout);
+        instance.get('/all', AuthController.getAll);
         done();
     }, {prefix: '/auth'});
 }

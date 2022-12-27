@@ -1,12 +1,13 @@
 import { ServerApiVersion } from 'mongodb';
 import mongoose from 'mongoose';
 import path from 'path';
+import { appConfig } from './config';
 
 export async function setupDatabase() {
     const certificatePath = path.join(__dirname, '../cert.pem');
 
     mongoose.set('strictQuery', false);
-    return await mongoose.connect('mongodb+srv://cluster0.h748kzp.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority',
+    return await mongoose.connect(appConfig.MONGOOSE_URI,
         {
             sslKey: certificatePath,
             sslCert: certificatePath,

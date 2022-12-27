@@ -18,9 +18,9 @@ export namespace AuthService {
         const bathSalt = appConfig.PASSWORD_SALT;
         const lastSalt = bathSalt.concat(salt);
 
-        console.log(`bathsalth: ${bathSalt}`);
-        console.log(`userSalt: ${salt}`);
-        console.log(`lastSalt: ${lastSalt}`);
+        console.log(`[INFO] bathsalth: ${bathSalt}`);
+        console.log(`[INFO] userSalt: ${salt}`);
+        console.log(`[INFO] lastSalt: ${lastSalt}`);
 
         return scryptSync(password, lastSalt, 32).toString("hex");
     }

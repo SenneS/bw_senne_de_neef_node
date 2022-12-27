@@ -2,6 +2,7 @@ import { fastifyStatic } from '@fastify/static';
 import fastify, { FastifyInstance } from 'fastify';
 import path from 'path';
 import { installAPIs } from './api/APIs';
+import { appConfig } from './config';
 import { setupDatabase } from './database';
 import { installMiddleware } from './middleware';
 
@@ -25,7 +26,9 @@ export async function startServer() {
 
     installAPIs(serverInstance);
 
-    serverInstance.listen({port: 8080}).catch((reason) => {
-        console.log(`exception: ${reason}`);
+    serverInstance.listen({port: appConfig.PORT, host: appConfig.HOST}).then(() => {
+        console.log(`[INFO] listening on http://${appConfig.HOST}:${appConfig.PORT}`);
+    }).catch((reason) => {
+        console.log(`[ERROR] exception: ${reason}`);
     })
 }

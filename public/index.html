@@ -2,30 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My API test page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer="defer" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer="defer" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer="defer" src="./scripts/script.js"></script>
 </head>
 <body>
 
-<form method="POST" action="/api/v1/auth/register">
-    <input type="text" name="username" required>
-    <input type="email" name="email" required>
-    <input type="password" name="password" required>
-    <input type="submit" value="Register">
-</form>
+<header>
+    <h1>API test page</h1>
+    <hr/>
+</header>
+<main class="container">
 
-<hr/>
+    <article class="row row-cols-3">
+        <section class="border col col-3">
+            <h5>Register Test</h5>
+            <hr/>
+            <form id="register-form" method="POST" action="/api/v1/auth/register">
+                <label class="mb-3 form-label">
+                    Username:
+                    <input class="form-control" type="text" name="username" required>
+                </label>
+                <label class="mb-3 form-label">
+                    Email:
+                    <input class="form-control" type="email" name="email" required>
+                </label>
+                <label class="mb-3 form-label">
+                    Password:
+                    <input class="form-control" type="password" name="password" required>
+                </label>
+                <input class="mb-3 btn btn-primary" type="submit" value="Register">
+            </form>
+        </section>
 
-<form method="POST" action="/api/v1/auth/login">
-    <input type="email" name="email" required>
-    <input type="password" name="password" required>
-    <input type="submit" value="Login">
-</form>
+        <section class="border col col-3">
+            <h5>Login Test</h5>
+            <hr/>
+            <form id="login-form" method="POST" action="/api/v1/auth/login">
+                <label class="mb-3 form-label">
+                    Email
+                    <input class="form-control" type="email" name="email" required>
+                </label>
+                <label class="mb-3 form-label">
+                    Password
+                    <input class="form-control" type="password" name="password" required>
+                </label>
+                <input class="mb-3 btn btn-primary" type="submit" value="Login">
+            </form>
+        </section>
 
-<hr/>
+        <section class="border col col-3">
+            <h5>Logout Test</h5>
+            <hr/>
+            <form id="logout-form" method="POST" action="/api/v1/auth/logout">
+                <input class="mb-3 btn btn-primary" type="submit" value="Logout (Delete Account)">
+            </form>
+        </section>
 
-<form method="POST" action="/api/v1/auth/logout">
-    <input type="submit" value="Logout (Delete Account)">
-</form>
+    </article>
 
+    <article class="row">
+        <button class="btn btn-primary" id="authCallBtn">Make Call</button>
+    </article>
+
+</main>
+
+
+<script>console.log('end of body.')</script>
 </body>
 </html>
