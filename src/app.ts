@@ -1,23 +1,21 @@
 import fastify from 'fastify';
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { ServerApiVersion } from 'mongodb';
 import path from 'path';
+import mongoose from 'mongoose';
 
 const certificatePath = path.join(__dirname, '../cert.pem');
 
-const client = new MongoClient(
-    'mongodb+srv://cluster0.h748kzp.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority',
+mongoose.set('strictQuery', false);
+mongoose.connect('mongodb+srv://cluster0.h748kzp.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority',
     {
         sslKey: certificatePath,
         sslCert: certificatePath,
-        serverApi: ServerApiVersion.v1
+        serverApi: ServerApiVersion.v1,
     }
-);
-
-client.connect().then(database => {
-    console.log(database);
-    client.close();
+).then((mongo) => {
+    console.log('connected');
 }).catch((reason) => {
-    console.log(reason);
+    console.log(`failed to connect: ${reason}`);
 })
 
 const server = fastify({});
