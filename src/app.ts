@@ -1,35 +1,22 @@
 import fastify from 'fastify';
-import { ServerApiVersion } from 'mongodb';
-import path from 'path';
-import mongoose from 'mongoose';
+import { setupDatabase } from './database';
+import { installRoutes } from './routes';
 
-const certificatePath = path.join(__dirname, '../cert.pem');
+async function startServer() {
 
-mongoose.set('strictQuery', false);
-mongoose.connect('mongodb+srv://cluster0.h748kzp.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority',
-    {
-        sslKey: certificatePath,
-        sslCert: certificatePath,
-        serverApi: ServerApiVersion.v1,
+    if(!(await setupDatabase())) {
+        console.log('failed to connect to database.');
+        return;
     }
-).then((mongo) => {
-    console.log('connected');
-}).catch((reason) => {
-    console.log(`failed to connect: ${reason}`);
-})
+    console.log('[INFO] connected to database.');
 
-const server = fastify({});
+    const server = fastify({});
 
-server.get('/', async (request, reply) => {
-    return reply.status(200).send('hello world');
-})
+    installRoutes(server);
 
-server.get('/error', async (request, reply) => {
-    return reply.status(500).send('error');
-})
+    server.listen({port: 8080}).catch((reason) => {
+        console.log(`exception: ${reason}`);
+    })
+}
 
-server.listen({port: 8080}).catch((reason) => {
-    console.log(`exception: ${reason}`);
-})
-
-console.log('hello world');
+startServer();
