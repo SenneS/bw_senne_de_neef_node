@@ -1,6 +1,8 @@
 import fastify from 'fastify';
+import path from 'path';
 import { setupDatabase } from './database';
 import { installRoutes } from './routes';
+import { fastifyStatic } from '@fastify/static';
 
 async function startServer() {
 
@@ -11,6 +13,10 @@ async function startServer() {
     console.log('[INFO] connected to database.');
 
     const server = fastify({});
+    server.register(fastifyStatic, {
+        root: path.join(__dirname, '../public'),
+        wildcard: false
+    });
 
     installRoutes(server);
 
