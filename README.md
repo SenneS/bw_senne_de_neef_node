@@ -6,3 +6,6 @@
 - https://www.section.io/engineering-education/nodejs-mongoosejs-mongodb/
 - https://github.com/fastify/fastify-static
 - https://stackoverflow.com/a/68303560
+- https://stackoverflow.com/a/61405208
+- https://stackoverflow.com/a/9270432
+- https://mongoosejs.com/docs/typescript.html

@@ -13,5 +13,19 @@
     <input type="submit" value="Register">
 </form>
 
+<hr/>
+
+<form method="POST" action="/api/v1/auth/login">
+    <input type="email" name="email" required>
+    <input type="password" name="password" required>
+    <input type="submit" value="Login">
+</form>
+
+<hr/>
+
+<form method="POST" action="/api/v1/auth/logout">
+    <input type="submit" value="Logout (Delete Account)">
+</form>
+
 </body>
 </html>
