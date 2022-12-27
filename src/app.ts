@@ -1,8 +1,9 @@
 import fastify from 'fastify';
 import path from 'path';
+import { installAPIs } from './api/APIs';
 import { setupDatabase } from './database';
-import { installRoutes } from './routes';
 import { fastifyStatic } from '@fastify/static';
+import { installMiddleware } from './middleware';
 
 async function startServer() {
 
@@ -18,7 +19,9 @@ async function startServer() {
         wildcard: false
     });
 
-    installRoutes(server);
+    installMiddleware(server);
+
+    installAPIs(server);
 
     server.listen({port: 8080}).catch((reason) => {
         console.log(`exception: ${reason}`);
