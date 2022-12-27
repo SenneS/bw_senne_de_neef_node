@@ -10,7 +10,8 @@
     "dev": "nodemon src/app.ts"
   },
   "dependencies": {
-    "fastify": "^4.10.2"
+    "fastify": "^4.10.2",
+    "mongodb": "^4.13.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
