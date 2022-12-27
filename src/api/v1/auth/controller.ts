@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { fastify, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { appConfig } from '../../../config';
 import { User } from '../../../models/User';
+import { serverInstance } from '../../../server.js';
 import { AuthService } from './service';
 const { scryptSync, randomBytes } = require("crypto");
 
@@ -31,7 +32,15 @@ namespace AuthController {
                 return reply.status(404).send({status: 404, message: "There is no account linked to the given email.", data: null});
             }
             const passwordHash = AuthService.getPasswordHash(password, existingUser.passwordSalt);
-            console.log(`calculated passwordHash == stored passwordHash (${passwordHash === existingUser.passwordHash}) ${passwordHash} === ${existingUser.passwordHash}`);
+            if(passwordHash !== existingUser.passwordHash) {
+                return reply.status(401).send({status: 401, message: "The entered password was incorrect."})
+            }
+            const token = serverInstance.jwt.sign({
+                username: existingUser.username,
+                email: existingUser.email
+            });
+
+            return reply.status(201).send({status: 201, message: null, data: token});
         }
         catch (e) {
             reply.status(500).send({status: 500, message: 'internal server error.', data: null})

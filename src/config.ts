@@ -15,5 +15,6 @@ function getStringFromEnv(name : string) : string {
 }
 
 export const appConfig = {
-    PASSWORD_SALT: getStringFromEnv('NODEAPP_PASSWORD_SALT')
+    PASSWORD_SALT: getStringFromEnv('NODEAPP_PASSWORD_SALT'),
+    JWT_SECRET: getStringFromEnv('NODEAPP_JWT_SECRET'),
 }
