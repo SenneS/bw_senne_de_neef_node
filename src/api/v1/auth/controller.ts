@@ -118,7 +118,7 @@ export function installAPIv1Auth(server : FastifyInstance) {
         instance.post('/register', AuthController.register);
         instance.post('/login', AuthController.login);
         instance.post('/logout', AuthController.logout);
-        instance.get('/all', AuthController.getAll);
+        instance.get('/all', {onRequest: serverInstance.authenticate}, AuthController.getAll);
         done();
     }, {prefix: '/auth'});
 }
