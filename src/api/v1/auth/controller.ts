@@ -1,6 +1,5 @@
-import { fastify, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { User } from '../../../models/User';
-import { serverInstance } from '../../../server.js';
 import { AuthService } from './service';
 
 namespace AuthController {
@@ -101,10 +100,7 @@ namespace AuthController {
 
     export async function getAll(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
         try {
-            console.log(request.cookies);
-            console.log(request.user);
-            console.log(request.headers);
-            return reply.status(200).send({status: 200, message: null, data: null});
+            return reply.status(200).send({status: 200, message: null, data: request.user});
         }
         catch (e) {
             return reply.status(500).send({status: 500, message: 'internal server error.', data: null})

@@ -2,9 +2,9 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import fastifyFormbody from '@fastify/formbody';
 import fastifyJwt from '@fastify/jwt';
-import { fastifyOauth2, FastifyOAuth2Options } from '@fastify/oauth2';
+import { fastifyOauth2 } from '@fastify/oauth2';
 
-import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { appConfig } from './config';
 
