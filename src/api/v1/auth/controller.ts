@@ -21,7 +21,7 @@ namespace AuthController {
     }>
 
 
-    export async function login(request : LoginRequest, reply : FastifyReply) {
+    export async function login(this : FastifyInstance, request : LoginRequest, reply : FastifyReply) {
         try {
             const {email, password} = request.body;
 
@@ -39,8 +39,8 @@ namespace AuthController {
                 email: existingUser.email
             };
 
-            const accessToken = serverInstance.jwt.sign(payload, {expiresIn: '1h'});
-            const refreshToken = serverInstance.jwt.sign(payload, {expiresIn: '1d'});
+            const accessToken = this.jwt.sign(payload, {expiresIn: '1h'});
+            const refreshToken = this.jwt.sign(payload, {expiresIn: '1d'});
 
             return reply.setCookie('refreshToken', refreshToken, {
                 path: '/api/v1/auth/refresh',
@@ -58,7 +58,7 @@ namespace AuthController {
         }
     }
 
-    export async function logout(request : FastifyRequest, reply : FastifyReply) {
+    export async function logout(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
         try {
             await User.deleteMany();
             return reply.status(200).send({status: 200, message: null, data: null});
@@ -69,7 +69,7 @@ namespace AuthController {
         }
     }
 
-    export async function register(request : RegisterRequest, reply : FastifyReply) {
+    export async function register(this : FastifyInstance, request : RegisterRequest, reply : FastifyReply) {
         try {
             const {username, email, password} = request.body;
 
@@ -99,12 +99,22 @@ namespace AuthController {
         }
     }
 
-    export async function getAll(request : FastifyRequest, reply : FastifyReply) {
+    export async function getAll(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
         try {
             console.log(request.cookies);
             console.log(request.user);
             console.log(request.headers);
             return reply.status(200).send({status: 200, message: null, data: null});
+        }
+        catch (e) {
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+        }
+    }
+
+    export async function googleCallback(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+        try {
+            const token = await this.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
+            console.log(token);
         }
         catch (e) {
             return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
@@ -118,7 +128,8 @@ export function installAPIv1Auth(server : FastifyInstance) {
         instance.post('/register', AuthController.register);
         instance.post('/login', AuthController.login);
         instance.post('/logout', AuthController.logout);
-        instance.get('/all', {onRequest: serverInstance.authenticate}, AuthController.getAll);
+        instance.get('/all', {onRequest: instance.authenticate}, AuthController.getAll);
+        instance.get('/google/callback', AuthController.googleCallback);
         done();
     }, {prefix: '/auth'});
 }
@@ -129,7 +140,7 @@ export function installAPIv1Auth(server : FastifyInstance) {
 
         }
         catch (e) {
-            reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
         }
     }
  */

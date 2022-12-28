@@ -30,4 +30,7 @@ export const appConfig = {
     JWT_SECRET: getStringFromEnv('NODEAPP_JWT_SECRET'),
     COOKIE_SECRET: getStringFromEnv('NODEAPP_COOKIE_SECRET'),
     MONGOOSE_URI: getStringFromEnv('NODEAPP_MONGOOSE_URI'),
+
+    GOOGLE_CLIENT_ID: getStringFromEnv('NODEAPP_GOOGLE_CLIENT_ID'),
+    GOOGLE_CLIENT_SECRET: getStringFromEnv('NODEAPP_GOOGLE_CLIENT_SECRET'),
 }

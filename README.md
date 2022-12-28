@@ -9,3 +9,6 @@
 - https://stackoverflow.com/a/61405208
 - https://stackoverflow.com/a/9270432
 - https://mongoosejs.com/docs/typescript.html
+- https://stackoverflow.com/a/70060763
+- https://stackoverflow.com/a/41358367
+- https://github.com/fastify/fastify-oauth2
