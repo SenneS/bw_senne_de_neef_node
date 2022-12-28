@@ -1,10 +1,5 @@
 # bw_senne_de_neef_node
 
-## todo
-- make use of refresh tokens in auth process
-- implement logout functionality
-- 
-
 ## resources
 
 - https://www.fastify.io/

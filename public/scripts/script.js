@@ -61,7 +61,8 @@ $('#logout-form').submit(async (event) => {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
         },
         body: "{}"
     })
@@ -69,10 +70,16 @@ $('#logout-form').submit(async (event) => {
 });
 
 $('#authCallBtn').click(async ()=> {
-   await fetch('/api/v1/auth/all', {
+   await fetch('/api/v1/auth/delete', {
        method: 'GET',
        headers: {
            'Authorization': `Bearer ${accessToken}`
        }
    });
+});
+
+$('#authCallBtn1').click(async ()=> {
+    await fetch('/api/v1/auth/refresh', {
+        method: "POST"
+    });
 });
