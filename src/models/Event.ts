@@ -3,6 +3,11 @@ import crypto from 'crypto';
 
 export interface IEvent {
     _id : string;
+    _calendarId : string;
+    name : string;
+    description : string;
+    startDate : Date;
+    endDate : Date;
 }
 
 export const EventSchema = new Schema<IEvent>({

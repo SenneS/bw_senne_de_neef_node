@@ -185,7 +185,7 @@ export function installAPIv1Auth(server : FastifyInstance) {
 }
 
 /*
-    export async function xxxxxx(request : FastifyRequest, reply : FastifyReply) {
+    export async function xxxxxx(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
         try {
 
         }

@@ -3,6 +3,8 @@ import crypto from 'crypto';
 
 export interface ICalendar {
     _id : string;
+    _userId : string;
+    name : string;
 }
 
 export const CalendarSchema = new Schema<ICalendar>({
