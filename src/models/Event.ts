@@ -15,6 +15,27 @@ export const EventSchema = new Schema<IEvent>({
         type: String,
         default: () => { return crypto.randomUUID(); },
         required: true,
+    },
+    _calendarId: {
+        type: String,
+        required: true,
+        ref: 'Calendar'
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    startDate: {
+        type: Date,
+        required: true
+    },
+    endDate: {
+        type: Date,
+        required: true
     }
 });
 export const Event = mongoose.model<IEvent>("Event", EventSchema);
