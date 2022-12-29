@@ -31,8 +31,12 @@ const getAccessAndRefreshToken = async () => {
     return new Promise((resolve, reject) =>{
         pm.sendRequest(getTokensRequest, (err, response) => {
             if(err) {
-                return reject(false);
+                return resolve(false);
             }
+            if((response.code < 200 && response.code >= 300)) {
+                return resolve(false);
+            }
+
             const body = response.json();
             const data = body.data;
             accessToken = data.accessToken;
@@ -56,9 +60,10 @@ const checkAccessToken = async () => {
     return new Promise((resolve, reject) =>{
         pm.sendRequest(checkAccessTokenRequest, (err, response) => {
             if(err) {
-                return reject(false);
+                return resolve(false);
             }
-            return resolve(true);
+            console.log(response.code);
+            return (response.code >= 200 && response.code < 300) ? resolve(true) : resolve(false);
         });
     });
 };
@@ -76,8 +81,12 @@ const refreshAccessToken = async () => {
     return new Promise((resolve, reject) =>{
         pm.sendRequest(refreshAccessTokenRequest, (err, response) => {
             if(err) {
-                return reject(false);
+                return resolve(false);
             }
+            if((response.code < 200 && response.code >= 300)) {
+                return resolve(false);
+            }
+
             const body = response.json();
             const data = body.data;
             accessToken = data.accessToken;
