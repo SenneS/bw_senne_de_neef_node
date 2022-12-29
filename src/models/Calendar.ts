@@ -22,11 +22,13 @@ export const CalendarSchema = new Schema<ICalendar>({
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        index: 'text'
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        index: 'text'
     }
 });
 CalendarSchema.post('remove', async (res : ICalendar, next)=> {

@@ -15,6 +15,11 @@ namespace CalendarController {
     type ReadCalendarRequest = FastifyRequest<{
         Params: {
             id: string;
+        },
+        Querystring: {
+            page: number,
+            items: number,
+            search?: string;
         }
     }>;
 
@@ -65,6 +70,8 @@ namespace CalendarController {
     export async function readCalendar(this : FastifyInstance, request : ReadCalendarRequest, reply : FastifyReply) {
         try {
             const { id } = request.params;
+            const { page, items, search } = request.query;
+            const offset = (page - 1) * items;
             const user = request.user as IUserJWT;
 
             const calendar = await Calendar.findById(id);
@@ -77,17 +84,32 @@ namespace CalendarController {
 
             const res = await Calendar.aggregate([
                 {
-                    "$match": { "_id": id }
+                    $match: { "_id": id }
                 },
                 {
-                    "$lookup": {
-                        "from": "events",
-                        "localField": "_id",
-                        "foreignField": "_calendarId",
-                        "as": "events"
+                    $lookup: {
+                        from: "events",
+                        let: {id: "$_id"},
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$$id", "$_calendarId"]
+                                    }
+                                },
+                            },
+                            {
+                                $skip: offset,
+                            },
+                            {
+                                $limit: items
+                            }
+                        ],
+                        as: "events"
                     }
                 }
             ]);
+
 
             let response = {
                 id: calendar._id,
@@ -220,6 +242,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
             onRequest: instance.authenticate,
             schema: {
                 params: CalendarSchemas.readRequestParamsSchema,
+                querystring: CalendarSchemas.readRequestQuerySchema,
                 response: {
                     '2xx': CalendarSchemas.readResponseBodySchema
                 }

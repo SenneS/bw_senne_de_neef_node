@@ -47,6 +47,15 @@ export namespace CalendarSchemas {
         required: [ 'id' ],
     };
 
+    export const readRequestQuerySchema = {
+        type: 'object',
+        properties: {
+            page: { type: 'integer', minimum: 1, default: 1},
+            items: { type: 'integer', minimum: 1, maximum: 25, default: 5},
+            search: { type: 'string', minLength: 1, maxLength: 20}
+        }
+    }
+
     export const readResponseBodySchema = {
         type: 'object',
         properties: {

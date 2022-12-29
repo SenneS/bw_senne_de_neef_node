@@ -23,11 +23,13 @@ export const EventSchema = new Schema<IEvent>({
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        index: 'text'
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        index: 'text'
     },
     startDate: {
         type: Date,
