@@ -5,6 +5,13 @@ import { CalendarSchemas } from './schemas';
 
 namespace CalendarController {
 
+    type CreateCalendarRequest = FastifyRequest<{
+        Body: {
+            name: string;
+            description: string;
+        }
+    }>;
+
     type ReadCalendarRequest = FastifyRequest<{
         Params: {
             id: string;
@@ -34,10 +41,19 @@ namespace CalendarController {
         }
     }>;
 
-    export async function createCalendar(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+    export async function createCalendar(this : FastifyInstance, request : CreateCalendarRequest, reply : FastifyReply) {
         try {
-            console.log('hello');
-            return reply.status(200);
+            const { name, description } = request.body;
+            const user = request.user as IUserJWT;
+
+            const calendar = new Calendar();
+            calendar.name = name;
+            calendar.description = description;
+            calendar._userId = user.sub;
+
+            await calendar.save();
+
+            return reply.status(200).send({status: 200, message: null, data: {id: calendar._id}});
         }
         catch (e) {
             console.log(`error: ${e}`);
@@ -109,7 +125,8 @@ namespace CalendarController {
             if(calendar._userId != user.sub) {
                 return reply.status(404).send({status: 403, message: 'You are not allowed to delete someone elses calendar.', data: null});
             }
-            await Calendar.findByIdAndDelete(id);
+            await calendar.delete();
+
             return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
@@ -121,13 +138,15 @@ namespace CalendarController {
     export async function getCalendars(this : FastifyInstance, request : GetCalendarsRequest, reply : FastifyReply) {
         try {
             const { page, items } = request.query;
+            const offset = (page - 1) * items;
+
             const user = request.user as IUserJWT;
 
-            const count = await Calendar.find({_userId: user.sub})
-            const calendars = await Calendar.find({}).skip(page * items).limit(items);
+            const count = await Calendar.find({_userId: user.sub}).count()
+            const calendars = await Calendar.find({}).skip(offset).limit(items);
 
             const data = calendars.map((calendar) => {
-                return {name: calendar.name, description: calendar.description};
+                return {id: calendar._id, name: calendar.name, description: calendar.description};
             });
 
             return reply.status(200).send({status: 200, message: null, data: {count: count, calendars: data}});
@@ -146,7 +165,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
             schema: {
                 body: CalendarSchemas.createRequestBodySchema,
                 response: {
-                    200: CalendarSchemas.createResponseBodySchema
+                    '2xx': CalendarSchemas.createResponseBodySchema
                 }
             }
         },CalendarController.createCalendar); //create
@@ -156,7 +175,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
             schema: {
                 params: CalendarSchemas.readRequestParamsSchema,
                 response: {
-                    200: CalendarSchemas.readResponseBodySchema
+                    '2xx': CalendarSchemas.readResponseBodySchema
                 }
             }
         }, CalendarController.readCalendar); //read
@@ -167,7 +186,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
                 params: CalendarSchemas.updateRequestParamsSchema,
                 body: CalendarSchemas.updateRequestBodySchema,
                 response: {
-                    200: CalendarSchemas.updateResponseBodySchema
+                    '2xx': CalendarSchemas.updateResponseBodySchema
                 }
             }
         }, CalendarController.updateCalendar); //update
@@ -177,7 +196,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
             schema: {
                 params: CalendarSchemas.deleteRequestParamsSchema,
                 response: {
-                    200: CalendarSchemas.deleteResponseSchema
+                    '2xx': CalendarSchemas.deleteResponseSchema
                 }
             }
         }, CalendarController.deleteCalendar); //delete
@@ -187,7 +206,7 @@ export function installAPIv1Calendar(server : FastifyInstance) {
             schema: {
                 querystring: CalendarSchemas.getRequestQuerySchema,
                 response: {
-                    200: CalendarSchemas.getResponseBodySchema
+                    '2xx': CalendarSchemas.getResponseBodySchema
                 }
             }
         }, CalendarController.getCalendars); //list

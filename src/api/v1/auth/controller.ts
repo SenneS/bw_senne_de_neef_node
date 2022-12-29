@@ -164,6 +164,16 @@ namespace AuthController {
         }
     }
 
+    export async function me(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+        try {
+            return reply.status(200).send({status: 200, message: null, data: request.user});
+        }
+        catch (e) {
+            console.log(`error: ${e}`);
+            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
+        }
+    }
+
 }
 
 export function installAPIv1Auth(server : FastifyInstance) {
@@ -174,6 +184,7 @@ export function installAPIv1Auth(server : FastifyInstance) {
         instance.post('/refresh', AuthController.refresh);
         instance.get('/delete', {onRequest: instance.authenticate}, AuthController.deleteMe);
         instance.get('/google/callback', AuthController.googleCallback);
+        instance.get('/me', {onRequest: instance.authenticate}, AuthController.me);
         done();
     }, {prefix: '/auth'});
 }

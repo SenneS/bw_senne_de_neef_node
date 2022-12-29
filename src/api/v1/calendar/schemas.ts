@@ -29,10 +29,11 @@ export namespace CalendarSchemas {
             },
             data: {
                 type: 'object',
-                nullable: true
+                nullable: true,
+                additionalProperties: true
             }
         },
-        required: ['status, message, data']
+        required: ['status', 'message', 'data']
     };
 
     export const readRequestParamsSchema = {
@@ -58,10 +59,11 @@ export namespace CalendarSchemas {
             },
             data: {
                 type: 'object',
-                nullable: true
+                nullable: true,
+                additionalProperties: true
             }
         },
-        required: ['status, message, data']
+        required: ['status', 'message', 'data']
     };
 
     export const updateRequestParamsSchema = {
@@ -111,10 +113,11 @@ export namespace CalendarSchemas {
             },
             data: {
                 type: 'object',
-                nullable: true
+                nullable: true,
+                additionalProperties: true
             }
         },
-        required: ['status, message, data']
+        required: ['status', 'message', 'data']
     };
 
     export const deleteRequestParamsSchema = {
@@ -140,10 +143,11 @@ export namespace CalendarSchemas {
             },
             data: {
                 type: 'object',
-                nullable: true
+                nullable: true,
+                additionalProperties: true
             }
         },
-        required: ['status, message, data']
+        required: ['status', 'message', 'data']
     };
 
     export const getRequestQuerySchema = {
@@ -166,9 +170,10 @@ export namespace CalendarSchemas {
             },
             data: {
                 type: 'object',
-                nullable: true
+                nullable: true,
+                additionalProperties: true
             }
         },
-        required: ['status, message, data']
+        required: ['status', 'message', 'data']
     }
 }

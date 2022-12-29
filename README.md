@@ -14,3 +14,4 @@
 - https://stackoverflow.com/a/70060763
 - https://stackoverflow.com/a/41358367
 - https://github.com/fastify/fastify-oauth2
+- https://stackoverflow.com/a/69653389
