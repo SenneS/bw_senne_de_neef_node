@@ -3,17 +3,36 @@ export namespace CalendarSchemas {
     export const createRequestBodySchema = {
         type: 'object',
         properties: {
-
+            name: {
+                type: 'string',
+                minLength: 5,
+                maxLength: 255
+            },
+            description: {
+                type: 'string',
+                minLength: 20,
+                maxLength: 8192
+            }
         },
-        required: ['']
+        required: ['name', 'description']
     };
 
     export const createResponseBodySchema = {
         type: 'object',
         properties: {
-
+            status: {
+                type: 'integer'
+            },
+            message: {
+                type: 'string',
+                nullable: true
+            },
+            data: {
+                type: 'object',
+                nullable: true
+            }
         },
-        required: ['']
+        required: ['status, message, data']
     };
 
     export const readRequestParamsSchema = {
@@ -30,9 +49,19 @@ export namespace CalendarSchemas {
     export const readResponseBodySchema = {
         type: 'object',
         properties: {
-
+            status: {
+                type: 'integer'
+            },
+            message: {
+                type: 'string',
+                nullable: true
+            },
+            data: {
+                type: 'object',
+                nullable: true
+            }
         },
-        required: ['']
+        required: ['status, message, data']
     };
 
     export const updateRequestParamsSchema = {
@@ -49,17 +78,43 @@ export namespace CalendarSchemas {
     export const updateRequestBodySchema = {
         type: 'object',
         properties: {
-
+            name: {
+                type: 'string',
+                minLength: 5,
+                maxLength: 255
+            },
+            description: {
+                type: 'string',
+                minLength: 20,
+                maxLength: 8192
+            }
         },
-        required: ['']
+        anyOf: [
+            {
+                required: ['name']
+            },
+            {
+                required: ['description']
+            },
+        ]
     };
 
     export const updateResponseBodySchema = {
         type: 'object',
         properties: {
-
+            status: {
+                type: 'integer'
+            },
+            message: {
+                type: 'string',
+                nullable: true
+            },
+            data: {
+                type: 'object',
+                nullable: true
+            }
         },
-        required: ['']
+        required: ['status, message, data']
     };
 
     export const deleteRequestParamsSchema = {
@@ -76,9 +131,44 @@ export namespace CalendarSchemas {
     export const deleteResponseSchema = {
         type: 'object',
         properties: {
-
+            status: {
+                type: 'integer'
+            },
+            message: {
+                type: 'string',
+                nullable: true
+            },
+            data: {
+                type: 'object',
+                nullable: true
+            }
         },
-        required: ['']
+        required: ['status, message, data']
     };
 
+    export const getRequestQuerySchema = {
+        type: 'object',
+        properties: {
+            page: { type: 'integer', minimum: 1, default: 1},
+            items: { type: 'integer', minimum: 1, maximum: 25, default: 5}
+        },
+    }
+
+    export const getResponseBodySchema = {
+        type: 'object',
+        properties: {
+            status: {
+                type: 'integer'
+            },
+            message: {
+                type: 'string',
+                nullable: true
+            },
+            data: {
+                type: 'object',
+                nullable: true
+            }
+        },
+        required: ['status, message, data']
+    }
 }

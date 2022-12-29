@@ -69,13 +69,7 @@ namespace AuthController {
     export async function logout(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
         try {
             const user = request.user as IUserJWT;
-            console.log(request.user);
-
-            const res = await RefreshToken.find({_userId: user.sub});
-            console.log(res);
             await RefreshToken.deleteMany({_userId: user.sub});
-            //RefreshToken.deleteMany({_userId: user})
-            //await User.deleteMany();
             return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
