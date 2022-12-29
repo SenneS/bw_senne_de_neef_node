@@ -5,6 +5,22 @@ import { CalendarSchemas } from './schemas';
 
 namespace CalendarController {
 
+    type ReadCalendarRequest = FastifyRequest<{
+        Params: {
+            id: string;
+        }
+    }>;
+
+    type UpdateCalendarRequest = FastifyRequest<{
+        Params: {
+            id: string;
+        },
+        Body: {
+            name?: string;
+            description?: string;
+        }
+    }>;
+
     type DeleteCalendarRequest = FastifyRequest<{
         Params: {
             id: string;
@@ -29,8 +45,19 @@ namespace CalendarController {
         }
     }
 
-    export async function readCalendar(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+    export async function readCalendar(this : FastifyInstance, request : ReadCalendarRequest, reply : FastifyReply) {
         try {
+            const { id } = request.params;
+            const user = request.user as IUserJWT;
+
+            const calendar = await Calendar.findById(id);
+            if(!calendar) {
+                return reply.status(404).send({status: 404, message: 'id does not correspond to a calendar.', data: null});
+            }
+            if(calendar._userId != user.sub) {
+                return reply.status(404).send({status: 403, message: 'You are not allowed to read someone elses calendar.', data: null});
+            }
+
             return reply.status(200).send({});
         }
         catch (e) {
@@ -39,9 +66,30 @@ namespace CalendarController {
         }
     }
 
-    export async function updateCalendar(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+    export async function updateCalendar(this : FastifyInstance, request : UpdateCalendarRequest, reply : FastifyReply) {
         try {
-            return reply.status(200).send({});
+            const { id } = request.params;
+            const { name, description } = request.body;
+
+            const user = request.user as IUserJWT;
+
+            const calendar = await Calendar.findById(id);
+            if(!calendar) {
+                return reply.status(404).send({status: 404, message: 'id does not correspond to a calendar.', data: null});
+            }
+            if(calendar._userId != user.sub) {
+                return reply.status(404).send({status: 403, message: 'You are not allowed to update someone elses calendar.', data: null});
+            }
+
+            if(name) {
+                calendar.name = name;
+            }
+            if(description) {
+                calendar.description = description;
+            }
+            await calendar.save();
+
+            return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
             console.log(`error: ${e}`);
