@@ -82,15 +82,11 @@ namespace EventController {
             const { id } = request.params;
             const user = request.user as IUserJWT;
 
-            console.log(id);
-
             const event = await Event.findById(id);
             if(!event) {
                 return reply.status(404).send({status: 404, message: 'id does not correspond to an event.', data: null});
             }
-            console.log(event);
             const calendar = await Calendar.findById(event._calendarId);
-            console.log(calendar);
             if(!calendar) {
                 return reply.status(404).send({status: 404, message: 'the event does not belong to a valid calendar (how did this happen?)', data: null})
             }

@@ -37,7 +37,8 @@ namespace CalendarController {
     type GetCalendarsRequest = FastifyRequest<{
         Querystring: {
             page: number,
-            items: number
+            items: number,
+            search?: string;
         }
     }>;
 
@@ -74,7 +75,41 @@ namespace CalendarController {
                 return reply.status(404).send({status: 403, message: 'You are not allowed to read someone elses calendar.', data: null});
             }
 
-            return reply.status(200).send({});
+            const res = await Calendar.aggregate([
+                {
+                    "$match": { "_id": id }
+                },
+                {
+                    "$lookup": {
+                        "from": "events",
+                        "localField": "_id",
+                        "foreignField": "_calendarId",
+                        "as": "events"
+                    }
+                }
+            ]);
+
+            let response = {
+                id: calendar._id,
+                name: calendar.name,
+                description: calendar.description,
+                events: <any>[]
+            };
+
+            if(res && Array.isArray(res)) {
+                for(let ev of res[0].events) {
+                    let event = {
+                      id: ev._id,
+                      name: ev.name,
+                      description: ev.description,
+                      startDate: ev.startDate,
+                      endDate: ev.endDate,
+                    };
+                    response.events.push(event);
+                }
+            }
+
+            return reply.status(200).send({status: 200, message: null, data: response});
         }
         catch (e) {
             console.log(`error: ${e}`);
@@ -137,13 +172,24 @@ namespace CalendarController {
 
     export async function getCalendars(this : FastifyInstance, request : GetCalendarsRequest, reply : FastifyReply) {
         try {
-            const { page, items } = request.query;
+            const { page, items, search } = request.query;
             const offset = (page - 1) * items;
 
             const user = request.user as IUserJWT;
 
-            const count = await Calendar.find({_userId: user.sub}).count()
-            const calendars = await Calendar.find({}).skip(offset).limit(items);
+            interface QueryInterface {
+              _userId : string;
+              name? : any;
+            }
+            let query : QueryInterface = {
+              _userId: user.sub
+            };
+            if(search) {
+                query.name = { "$regex": search, "$options": "i" }
+            }
+
+            const count = await Calendar.find(query).count()
+            const calendars = await Calendar.find(query).skip(offset).limit(items);
 
             const data = calendars.map((calendar) => {
                 return {id: calendar._id, name: calendar.name, description: calendar.description};
