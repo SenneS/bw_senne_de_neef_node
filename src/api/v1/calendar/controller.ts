@@ -1,9 +1,15 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { Calendar } from '../../../models/Calendar';
+import { Calendar, CalendarSchema } from '../../../models/Calendar';
 import { IUserJWT } from '../../../models/User';
 import { CalendarSchemas } from './schemas';
 
 namespace CalendarController {
+
+    type DeleteCalendarRequest = FastifyRequest<{
+        Params: {
+            id: string;
+        }
+    }>;
 
     type GetCalendarsRequest = FastifyRequest<{
         Querystring: {
@@ -43,9 +49,20 @@ namespace CalendarController {
         }
     }
 
-    export async function deleteCalendar(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
+    export async function deleteCalendar(this : FastifyInstance, request : DeleteCalendarRequest, reply : FastifyReply) {
         try {
-            return reply.status(200);
+            const { id } = request.params;
+            const user = request.user as IUserJWT;
+
+            const calendar = await Calendar.findOne({_id: id});
+            if(!calendar) {
+                return reply.status(404).send({status: 404, message: 'id does not correspond to a calendar.', data: null});
+            }
+            if(calendar._userId != user.sub) {
+                return reply.status(404).send({status: 403, message: 'You are not allowed to delete someone elses calendar.', data: null});
+            }
+            await Calendar.findByIdAndDelete(id);
+            return reply.status(200).send({status: 200, message: null, data: null});
         }
         catch (e) {
             console.log(`error: ${e}`);
