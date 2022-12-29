@@ -70,7 +70,7 @@ namespace CalendarController {
     export async function readCalendar(this : FastifyInstance, request : ReadCalendarRequest, reply : FastifyReply) {
         try {
             const { id } = request.params;
-            const { page, items, search } = request.query;
+            let { page, items, search } = request.query;
             const offset = (page - 1) * items;
             const user = request.user as IUserJWT;
 
@@ -82,34 +82,73 @@ namespace CalendarController {
                 return reply.status(404).send({status: 403, message: 'You are not allowed to read someone elses calendar.', data: null});
             }
 
-            const res = await Calendar.aggregate([
-                {
-                    $match: { "_id": id }
-                },
-                {
-                    $lookup: {
-                        from: "events",
-                        let: {id: "$_id"},
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $eq: ["$$id", "$_calendarId"]
+            let res : any[];
+
+            if(search) {
+                res = await Calendar.aggregate([
+                    {
+                        $match: { "_id": id }
+                    },
+                    {
+                        $lookup: {
+                            from: "events",
+                            let: {id: "$_id"},
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $text: {
+                                            $search: search
+                                        }
                                     }
                                 },
-                            },
-                            {
-                                $skip: offset,
-                            },
-                            {
-                                $limit: items
-                            }
-                        ],
-                        as: "events"
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$$id", "$_calendarId"]
+                                        }
+                                    },
+                                },
+                                {
+                                    $skip: offset,
+                                },
+                                {
+                                    $limit: items
+                                }
+                            ],
+                            as: "events"
+                        }
                     }
-                }
-            ]);
-
+                ]);
+            }
+            else {
+                res = await Calendar.aggregate([
+                    {
+                        $match: { "_id": id }
+                    },
+                    {
+                        $lookup: {
+                            from: "events",
+                            let: {id: "$_id"},
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$$id", "$_calendarId"]
+                                        }
+                                    },
+                                },
+                                {
+                                    $skip: offset,
+                                },
+                                {
+                                    $limit: items
+                                }
+                            ],
+                            as: "events"
+                        }
+                    }
+                ]);
+            }
 
             let response = {
                 id: calendar._id,

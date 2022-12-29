@@ -224,15 +224,3 @@ export function installAPIv1Event(server : FastifyInstance) {
         done();
     }, {prefix: '/event'});
 }
-
-/*
-    export async function xxxxxx(this : FastifyInstance, request : FastifyRequest, reply : FastifyReply) {
-        try {
-
-        }
-        catch (e) {
-            console.log(`error: ${e}`);
-            return reply.status(500).send({status: 500, message: 'internal server error.', data: null})
-        }
-    }
- */
