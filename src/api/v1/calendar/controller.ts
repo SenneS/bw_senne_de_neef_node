@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { Calendar, CalendarSchema } from '../../../models/Calendar';
+import { Calendar } from '../../../models/Calendar';
 import { IUserJWT } from '../../../models/User';
 import { CalendarSchemas } from './schemas';
 

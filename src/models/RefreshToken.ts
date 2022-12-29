@@ -1,4 +1,4 @@
-import mongoose, { Schema, SchemaType, SchemaTypes, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 export interface IRefreshToken {
     _userId : string;
